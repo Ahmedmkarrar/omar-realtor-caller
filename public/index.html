@@ -605,8 +605,8 @@
         const i=job.results.filter(r=>r.status==='initiated').length;
         const e=job.results.filter(r=>r.status==='error').length;
         finishLive({initiated:i,errors:e});
-      } else setTimeout(()=>pollFallback(jobId),3000);
-    } catch(_){ setTimeout(()=>pollFallback(jobId),5000); }
+      } else setTimeout(()=>pollFallback(jobId),2000);
+    } catch(_){ setTimeout(()=>pollFallback(jobId),2000); }
   }
 
   // ── Fetch Results ──
