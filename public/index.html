@@ -72,10 +72,21 @@
     .screen.active { display: block; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-    /* ── Upload ── */
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 2px; padding: 16px 20px 0; }
+    .tab-btn { padding: 10px 20px; background: none; border: none; border-radius: 8px 8px 0 0;
+      color: var(--mutedlt); font-family: inherit; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all .15s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,.03); }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: var(--goldglow); }
+    .tab-divider { border-bottom: 1px solid var(--border); margin: 0 20px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Upload / Dropzone ── */
     .dropzone {
-      margin: 24px; border: 2px dashed var(--borderlt); border-radius: var(--r);
-      padding: 56px 32px; text-align: center; cursor: pointer;
+      margin: 20px 24px 8px; border: 2px dashed var(--borderlt); border-radius: var(--r);
+      padding: 52px 32px; text-align: center; cursor: pointer;
       transition: all .2s; position: relative;
     }
     .dropzone.over, .dropzone:hover { border-color: var(--gold); background: var(--goldglow); }
@@ -86,11 +97,34 @@
     .drop-badge { display:inline-block; margin-top:16px; padding:4px 12px;
       background:var(--surface2); border:1px solid var(--borderlt); border-radius:100px;
       font-size:11px; font-weight:500; color:var(--mutedlt); letter-spacing:.4px; }
-    .cols-hint  { padding: 0 24px 20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .cols-hint  { padding: 4px 24px 20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .hint-lbl   { font-size:11px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.5px; }
     .tag        { padding:3px 9px; border-radius:5px; font-size:11px; font-weight:500; }
     .tag.req    { background:var(--goldglow); color:var(--gold); border:1px solid rgba(212,165,52,.2); }
     .tag.opt    { background:var(--surface2); color:var(--mutedlt); border:1px solid var(--border); }
+
+    /* ── PDF status ── */
+    .pdf-status { margin: 0 24px 20px; padding: 14px 18px; border-radius: var(--rs);
+      border: 1px solid var(--border); font-size: 13px; display: none; }
+    .pdf-status.loading { color: var(--mutedlt); }
+    .pdf-status.ok  { background: rgba(34,197,94,.07); border-color: rgba(34,197,94,.2); color: var(--ok); }
+    .pdf-status.err { background: rgba(240,74,74,.08); border-color: rgba(240,74,74,.2); color: #fca5a5; }
+
+    /* ── Manual entry ── */
+    .manual-wrap { padding: 20px 24px 24px; }
+    .manual-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase;
+      letter-spacing: .8px; margin-bottom: 10px; }
+    .manual-ta { width: 100%; height: 190px; padding: 14px; background: var(--bg);
+      border: 1px solid var(--borderlt); border-radius: var(--rs); color: var(--text);
+      font-family: 'Inter', monospace; font-size: 14px; line-height: 1.7;
+      resize: vertical; transition: border-color .15s; }
+    .manual-ta:focus { outline: none; border-color: var(--gold); }
+    .manual-ta::placeholder { color: var(--muted); }
+    .manual-hint { font-size: 12px; color: var(--muted); margin: 8px 0 20px; line-height: 1.5; }
+    .btn-continue { width: 100%; padding: 14px; background: var(--surface2);
+      border: 1px solid var(--borderlt); border-radius: var(--r); color: var(--text);
+      font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .btn-continue:hover { border-color: var(--gold); color: var(--gold); }
 
     /* ── Preview ── */
     .file-bar { padding:14px 24px; background:rgba(34,197,94,.07); border-bottom:1px solid var(--border);
@@ -98,6 +132,8 @@
     .file-bar .ck   { font-size:16px; color:var(--ok); }
     .file-bar .nm   { font-weight:600; }
     .file-bar .cnt  { color:var(--mutedlt); }
+    .file-bar .src  { font-size:11px; background:var(--surface2); border:1px solid var(--border);
+      padding:3px 9px; border-radius:100px; color:var(--mutedlt); font-weight:500; }
     .btn-chg { margin-left:auto; padding:5px 12px; background:none; border:1px solid var(--borderlt);
       border-radius:6px; color:var(--mutedlt); font-size:12px; font-family:inherit; cursor:pointer; transition:all .15s; }
     .btn-chg:hover { border-color:var(--gold); color:var(--gold); }
@@ -112,7 +148,7 @@
       width:100%; padding:9px 32px 9px 12px; background:var(--bg); border:1px solid var(--borderlt);
       border-radius:var(--rs); color:var(--text); font-family:inherit; font-size:13px;
       cursor:pointer; transition:border-color .15s; appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%235c6a8a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%235c6a8a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C%2Fsvg%3E");
       background-repeat:no-repeat; background-position:right 12px center;
     }
     .map-sel:focus { outline:none; border-color:var(--gold); }
@@ -124,10 +160,36 @@
     .ptbl td  { padding:9px 14px; border-bottom:1px solid var(--border); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
     .ptbl tr:last-child td { border-bottom:none; }
 
+    /* ── Phone-only preview ── */
+    .phone-list-wrap { border: 1px solid var(--border); border-radius: var(--rs); overflow: hidden; margin-bottom: 24px; max-height: 220px; overflow-y: auto; }
+    .phone-list-wrap::-webkit-scrollbar { width: 4px; }
+    .phone-list-wrap::-webkit-scrollbar-thumb { background: var(--borderlt); border-radius: 100px; }
+    .phone-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      border-bottom: 1px solid var(--border); font-size: 13px; }
+    .phone-item:last-child { border-bottom: none; }
+    .phone-num-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+      padding: 2px 8px; font-size: 11px; color: var(--muted); font-weight: 600; flex-shrink: 0; min-width: 28px; text-align: center; }
+    .phone-more { padding: 10px 14px; font-size: 12px; color: var(--muted); text-align: center; font-style: italic; }
+
+    /* ── Toggle switch ── */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 14px 16px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--rs); margin-bottom: 14px; }
+    .toggle-info .toggle-lbl { font-size: 13px; font-weight: 600; }
+    .toggle-info .toggle-sub { font-size: 12px; color: var(--mutedlt); margin-top: 3px; line-height: 1.4; }
+    .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--borderlt); border-radius: 100px; cursor: pointer; transition: .2s; }
+    .toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px;
+      left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s; }
+    .toggle-switch input:checked + .toggle-slider { background: var(--gold); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+    /* ── Limit row ── */
     .lim-row { display:flex; align-items:center; justify-content:space-between; padding:11px 16px;
       background:var(--surface2); border:1px solid var(--border); border-radius:var(--rs); margin-bottom:20px; font-size:13px; }
     .lim-row span { color:var(--mutedlt); }
-    .lim-input { width:72px; padding:6px 8px; background:var(--bg); border:1px solid var(--borderlt);
+    .lim-input { width:80px; padding:6px 8px; background:var(--bg); border:1px solid var(--borderlt);
       border-radius:6px; color:var(--text); font-family:inherit; font-size:13px; text-align:center; }
     .lim-input:focus { outline:none; border-color:var(--gold); }
 
@@ -149,6 +211,10 @@
     @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(212,165,52,.6)} 70%{box-shadow:0 0 0 8px rgba(212,165,52,0)} 100%{box-shadow:0 0 0 0 rgba(212,165,52,0)} }
     .live-top h2 { font-size:17px; font-weight:700; margin-bottom:4px; }
     .live-top p  { font-size:13px; color:var(--mutedlt); }
+
+    .probe-banner { padding: 12px 24px; background: rgba(234,179,8,.07); border-bottom: 1px solid rgba(234,179,8,.15);
+      font-size: 13px; color: var(--warm); display: none; }
+    .probe-banner.show { display: block; }
 
     .prog-sec { padding:20px 26px; border-bottom:1px solid var(--border); }
     .prog-lbl { display:flex; justify-content:space-between; font-size:12px; color:var(--mutedlt); margin-bottom:9px; }
@@ -252,6 +318,7 @@
       .sgrid { grid-template-columns:repeat(2,1fr); }
       .done-stats { flex-direction:column; align-items:center; }
       .pill { display:none; }
+      .tabs { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -274,24 +341,58 @@
   <div id="screen-upload" class="screen active">
     <div class="card">
       <div class="card-hdr">
-        <h2>Upload Lead List</h2>
-        <p>Drop your CSV and Sarah will call every lead automatically — personalized by name and property address.</p>
+        <h2>Load Your Lead List</h2>
+        <p>Upload a CSV, extract numbers from a PDF, or enter phone numbers manually.</p>
       </div>
-      <div class="dropzone" id="dropzone">
-        <input type="file" id="file-input" accept=".csv" />
-        <span class="drop-icon">📋</span>
-        <div class="drop-title">Drop your CSV file here</div>
-        <div class="drop-sub">or click anywhere to browse</div>
-        <div class="drop-badge">CSV only</div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-csv-btn" onclick="setTab('csv')">📋&nbsp; CSV</button>
+        <button class="tab-btn" id="tab-pdf-btn" onclick="setTab('pdf')">📄&nbsp; PDF</button>
+        <button class="tab-btn" id="tab-manual-btn" onclick="setTab('manual')">✏️&nbsp; Manual</button>
       </div>
-      <div class="cols-hint">
-        <span class="hint-lbl">Columns</span>
-        <span class="tag req">First Name ✱</span>
-        <span class="tag req">Last Name ✱</span>
-        <span class="tag req">Phone ✱</span>
-        <span class="tag opt">Street / Address</span>
-        <span class="tag opt">City</span>
-        <span class="tag opt">Property Value</span>
+      <div class="tab-divider"></div>
+
+      <!-- CSV Panel -->
+      <div id="panel-csv" class="tab-panel active">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept=".csv" />
+          <span class="drop-icon">📋</span>
+          <div class="drop-title">Drop your CSV file here</div>
+          <div class="drop-sub">or click anywhere to browse</div>
+          <div class="drop-badge">CSV only</div>
+        </div>
+        <div class="cols-hint">
+          <span class="hint-lbl">Columns</span>
+          <span class="tag req">First Name ✱</span>
+          <span class="tag req">Last Name ✱</span>
+          <span class="tag req">Phone ✱</span>
+          <span class="tag opt">Street / Address</span>
+          <span class="tag opt">City</span>
+          <span class="tag opt">Property Value</span>
+        </div>
+      </div>
+
+      <!-- PDF Panel -->
+      <div id="panel-pdf" class="tab-panel">
+        <div class="dropzone" id="dropzone-pdf">
+          <input type="file" id="pdf-input" accept=".pdf" />
+          <span class="drop-icon">📄</span>
+          <div class="drop-title">Drop your PDF file here</div>
+          <div class="drop-sub">Phone numbers are extracted automatically</div>
+          <div class="drop-badge">PDF only</div>
+        </div>
+        <div id="pdf-status" class="pdf-status"></div>
+      </div>
+
+      <!-- Manual Panel -->
+      <div id="panel-manual" class="tab-panel">
+        <div class="manual-wrap">
+          <div class="manual-lbl">Phone Numbers</div>
+          <textarea id="manual-ta" class="manual-ta" placeholder="Enter phone numbers, one per line:&#10;&#10;(805) 268-3615&#10;+1 800 555 0100&#10;5552345678"></textarea>
+          <div class="manual-hint">One number per line. Any format works — dashes, dots, spaces, parentheses.</div>
+          <button class="btn-continue" onclick="parseManual()">Continue with these numbers →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -303,18 +404,41 @@
         <span class="ck">✓</span>
         <span class="nm" id="file-name"></span>
         <span class="cnt" id="file-count"></span>
-        <button class="btn-chg" id="btn-chg">Change file</button>
+        <span class="src" id="source-badge"></span>
+        <button class="btn-chg" id="btn-chg" onclick="goBack()">← Change</button>
       </div>
       <div class="pbody">
-        <div class="slbl">Map Columns</div>
-        <div class="map-grid" id="map-grid"></div>
 
-        <div class="slbl">Preview — first 5 rows</div>
-        <div class="tbl-wrap"><table class="ptbl" id="prev-tbl"></table></div>
+        <!-- CSV: Column mapping + table preview -->
+        <div id="csv-mapping-section">
+          <div class="slbl">Map Columns</div>
+          <div class="map-grid" id="map-grid"></div>
+          <div class="slbl">Preview — first 5 rows</div>
+          <div class="tbl-wrap"><table class="ptbl" id="prev-tbl"></table></div>
+        </div>
 
+        <!-- PDF / Manual: Phone-only list preview -->
+        <div id="phone-only-section" style="display:none;">
+          <div class="slbl">Phone Numbers Found</div>
+          <div class="phone-list-wrap" id="phone-list"></div>
+        </div>
+
+        <!-- Probe text toggle -->
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-lbl">Probe text filter</div>
+            <div class="toggle-sub">Sends a test SMS to each number first — drops disconnected lines before calling. Uses Twilio credits.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="use-probe" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Limit row (no cap) -->
         <div class="lim-row">
-          <span>Max leads to call — <strong id="avail">0</strong> available</span>
-          <input type="number" class="lim-input" id="lim" value="80" min="1" max="80" />
+          <span>Leads to call — <strong id="avail">0</strong> available</span>
+          <input type="number" class="lim-input" id="lim" min="1" title="Leave blank or set to total for all leads" />
         </div>
 
         <div class="errbanner" id="prev-err"></div>
@@ -332,6 +456,9 @@
           <h2>Sarah is calling...</h2>
           <p id="live-sub">Initiating calls — do not close this tab.</p>
         </div>
+      </div>
+      <div id="probe-banner" class="probe-banner">
+        ⏳ Sending probe texts and filtering numbers — calls will start shortly...
       </div>
       <div class="prog-sec">
         <div class="prog-lbl">
@@ -384,11 +511,10 @@
         </div>
       </div>
 
-      <!-- Outcome summary pills -->
       <div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;" id="outcome-summary"></div>
 
       <div id="res-loading" class="res-loading">
-        <span class="spin spin-gold" style="border-top-color:var(--gold);border:2px solid rgba(212,165,52,.2);border-top:2px solid var(--gold);"></span>
+        <span class="spin spin-gold"></span>
         Fetching call summaries from VAPI...
       </div>
 
@@ -416,6 +542,8 @@
   let rows = [], cols = [];
   let nInit = 0, nErr = 0;
   let currentJobId = null;
+  let inputMode = 'csv';    // 'csv' | 'pdf' | 'manual'
+  let isPhoneOnly = false;
 
   // ── Screens ──
   function show(id) {
@@ -423,41 +551,60 @@
     document.getElementById('screen-' + id).classList.add('active');
   }
 
-  // ── Drag & Drop ──
+  // ── Tab switching ──
+  function setTab(tab) {
+    inputMode = tab;
+    ['csv', 'pdf', 'manual'].forEach(t => {
+      document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === tab);
+      document.getElementById('panel-' + t).classList.toggle('active', t === tab);
+    });
+  }
+
+  // ── Go back to upload ──
+  function goBack() {
+    isPhoneOnly = false;
+    show('upload');
+    setTab(inputMode);
+  }
+
+  // ── CSV: Drag & Drop ──
   const dz = document.getElementById('dropzone');
   dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
   dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) parseFile(f); });
-  document.getElementById('file-input').addEventListener('change', e => { if (e.target.files[0]) parseFile(e.target.files[0]); });
-  document.getElementById('btn-chg').addEventListener('click', () => show('upload'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) parseCSV(f); });
+  document.getElementById('file-input').addEventListener('change', e => { if (e.target.files[0]) parseCSV(e.target.files[0]); });
+
+  // ── PDF: Drag & Drop ──
+  const dzPdf = document.getElementById('dropzone-pdf');
+  dzPdf.addEventListener('dragover',  e => { e.preventDefault(); dzPdf.classList.add('over'); });
+  dzPdf.addEventListener('dragleave', () => dzPdf.classList.remove('over'));
+  dzPdf.addEventListener('drop', e => { e.preventDefault(); dzPdf.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) parsePDF(f); });
+  document.getElementById('pdf-input').addEventListener('change', e => { if (e.target.files[0]) parsePDF(e.target.files[0]); });
+
   document.getElementById('btn-fetch-res').addEventListener('click', fetchResults);
 
   // ── Parse CSV ──
-  function parseFile(file) {
+  function parseCSV(file) {
     if (!file.name.toLowerCase().endsWith('.csv')) { alert('Please upload a .csv file.'); return; }
+    inputMode = 'csv';
     Papa.parse(file, {
       header: false, skipEmptyLines: true,
       complete(res) {
         if (!res.data.length) { alert('CSV is empty.'); return; }
-
         const firstRow = res.data[0];
-
-        // Detect if first row looks like a header (non-numeric values)
         const firstCellIsPhone = /^\+?\d[\d\s\-().]{6,}$/.test(String(firstRow[0] || '').trim());
 
         if (firstCellIsPhone) {
-          // Headerless CSV — treat columns by position
-          // Try to detect: phone-only, or first/last/phone layout
           const numCols = firstRow.length;
+          isPhoneOnly = (numCols === 1);
           if (numCols === 1) {
-            // Just phone numbers
             cols = ['Phone'];
             rows = res.data.map(r => ({ 'Phone': String(r[0] || '').trim() }));
           } else if (numCols === 2) {
             cols = ['Phone', 'Col2'];
             rows = res.data.map(r => ({ 'Phone': String(r[0]||'').trim(), 'Col2': String(r[1]||'').trim() }));
           } else {
-            // 3+ cols — assume First Name, Last Name, Phone
+            isPhoneOnly = false;
             cols = ['First Name', 'Last Name', 'Phone', ...Array.from({length: numCols-3}, (_,i) => `Col${i+4}`)];
             rows = res.data.map(r => ({
               'First Name': String(r[0]||'').trim(),
@@ -466,22 +613,70 @@
               ...Object.fromEntries(Array.from({length: numCols-3}, (_,i) => [`Col${i+4}`, String(r[i+3]||'').trim()]))
             }));
           }
+          buildPreview(file.name, 'CSV'); show('preview');
         } else {
-          // Has headers — reparse with header:true
           Papa.parse(file, {
             header: true, skipEmptyLines: true,
             complete(res2) {
               rows = res2.data; cols = res2.meta.fields || [];
-              buildPreview(file.name); show('preview');
+              isPhoneOnly = false;
+              buildPreview(file.name, 'CSV'); show('preview');
             }
           });
-          return;
         }
-
-        buildPreview(file.name); show('preview');
       },
       error() { alert('Failed to read the CSV.'); }
     });
+  }
+
+  // ── Parse PDF ──
+  async function parsePDF(file) {
+    if (!file.name.toLowerCase().endsWith('.pdf')) { alert('Please upload a .pdf file.'); return; }
+    const statusEl = document.getElementById('pdf-status');
+    statusEl.className = 'pdf-status loading';
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '<span class="spin spin-gold"></span> Extracting phone numbers from PDF...';
+
+    const formData = new FormData();
+    formData.append('pdf', file);
+    try {
+      const res  = await fetch('/api/parse-pdf', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'PDF parse failed');
+      if (!data.phones.length) {
+        statusEl.className = 'pdf-status err';
+        statusEl.innerHTML = 'No phone numbers found in this PDF.';
+        return;
+      }
+      statusEl.className = 'pdf-status ok';
+      statusEl.innerHTML = `✓ Found <strong>${data.phones.length}</strong> phone numbers across ${data.pages} page${data.pages !== 1 ? 's' : ''}.`;
+
+      isPhoneOnly = true;
+      cols = ['Phone'];
+      rows = data.phones.map(p => ({ Phone: p.length === 10 ? `+1${p}` : `+${p}` }));
+      buildPreview(file.name, 'PDF');
+      setTimeout(() => show('preview'), 600);
+    } catch(e) {
+      statusEl.className = 'pdf-status err';
+      statusEl.innerHTML = 'Error: ' + x(e.message);
+    }
+  }
+
+  // ── Parse Manual entry ──
+  function parseManual() {
+    const text = document.getElementById('manual-ta').value;
+    if (!text.trim()) { alert('Please enter at least one phone number.'); return; }
+    const phoneRegex = /(\+?1?[\s.\-]?)?\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4}/g;
+    const matches = text.match(phoneRegex) || [];
+    const phones = [...new Set(
+      matches.map(p => p.replace(/\D/g, '')).filter(d => d.length >= 10).map(d => d.slice(-10))
+    )];
+    if (!phones.length) { alert('No valid phone numbers found. Please check your input.'); return; }
+    isPhoneOnly = true;
+    cols = ['Phone'];
+    rows = phones.map(p => ({ Phone: `+1${p}` }));
+    buildPreview(`${phones.length} numbers`, 'Manual');
+    show('preview');
   }
 
   function guess(...kws) {
@@ -491,58 +686,87 @@
   }
 
   // ── Build Preview ──
-  function buildPreview(name) {
+  function buildPreview(name, sourceLabel) {
     document.getElementById('file-name').textContent = name;
     document.getElementById('file-count').textContent = '• ' + rows.length + ' leads';
     document.getElementById('avail').textContent = rows.length;
+    document.getElementById('source-badge').textContent = sourceLabel || '';
     const lim = document.getElementById('lim');
-    lim.max = rows.length; lim.value = Math.min(80, rows.length);
+    lim.value = rows.length;
 
-    const fields = [
-      { key:'firstName',     label:'First Name',      req:true,  kws:['firstname','first name','first','fname','given'] },
-      { key:'lastName',      label:'Last Name',        req:true,  kws:['lastname','last name','last','lname','surname'] },
-      { key:'phone',         label:'Phone Number',     req:true,  kws:['phone','number','mobile','cell','tel','contact','telephone','direct','homephone','workphone'] },
-      { key:'streetName',    label:'Street / Address', req:false, kws:['street','address','addr','property'] },
-      { key:'city',          label:'City',             req:false, kws:['city','town','location'] },
-      { key:'propertyValue', label:'Property Value',   req:false, kws:['value','price','worth','propertyvalue'] },
-    ];
+    const csvSection   = document.getElementById('csv-mapping-section');
+    const phoneSection = document.getElementById('phone-only-section');
 
-    document.getElementById('map-grid').innerHTML = fields.map(f => {
-      const auto = guess(...f.kws);
-      const opts = cols.map(c => `<option value="${x(c)}"${c===auto?' selected':''}>${x(c)}</option>`).join('');
-      return `<div class="map-item">
-        <label>${f.label}${f.req?'<span class="req"> ✱</span>':''}</label>
-        <select class="map-sel" id="m-${f.key}">
-          ${f.req ? '' : '<option value="">— skip —</option>'}${opts}
-        </select>
-      </div>`;
-    }).join('');
+    if (isPhoneOnly) {
+      csvSection.style.display   = 'none';
+      phoneSection.style.display = 'block';
+      const preview = rows.slice(0, 25);
+      const more    = rows.length - preview.length;
+      document.getElementById('phone-list').innerHTML =
+        preview.map((r, i) => `
+          <div class="phone-item">
+            <span class="phone-num-badge">${i + 1}</span>
+            <span>${x(r.Phone || r['Phone'] || '')}</span>
+          </div>`).join('') +
+        (more > 0 ? `<div class="phone-more">...and ${more} more number${more !== 1 ? 's' : ''}</div>` : '');
+    } else {
+      csvSection.style.display   = 'block';
+      phoneSection.style.display = 'none';
 
-    const pc = cols.slice(0,6);
-    document.getElementById('prev-tbl').innerHTML =
-      `<thead><tr>${pc.map(c=>`<th>${x(c)}</th>`).join('')}</tr></thead>
-       <tbody>${rows.slice(0,5).map(row=>`<tr>${pc.map(c=>`<td>${x(String(row[c]??''))}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      const fields = [
+        { key:'firstName',     label:'First Name',      req:true,  kws:['firstname','first name','first','fname','given'] },
+        { key:'lastName',      label:'Last Name',        req:true,  kws:['lastname','last name','last','lname','surname'] },
+        { key:'phone',         label:'Phone Number',     req:true,  kws:['phone','number','mobile','cell','tel','contact','telephone','direct','homephone','workphone'] },
+        { key:'streetName',    label:'Street / Address', req:false, kws:['street','address','addr','property'] },
+        { key:'city',          label:'City',             req:false, kws:['city','town','location'] },
+        { key:'propertyValue', label:'Property Value',   req:false, kws:['value','price','worth','propertyvalue'] },
+      ];
+
+      document.getElementById('map-grid').innerHTML = fields.map(f => {
+        const auto = guess(...f.kws);
+        const opts = cols.map(c => `<option value="${x(c)}"${c === auto ? ' selected' : ''}>${x(c)}</option>`).join('');
+        return `<div class="map-item">
+          <label>${f.label}${f.req ? '<span class="req"> ✱</span>' : ''}</label>
+          <select class="map-sel" id="m-${f.key}">
+            ${f.req ? '' : '<option value="">— skip —</option>'}${opts}
+          </select>
+        </div>`;
+      }).join('');
+
+      const pc = cols.slice(0, 6);
+      document.getElementById('prev-tbl').innerHTML =
+        `<thead><tr>${pc.map(c => `<th>${x(c)}</th>`).join('')}</tr></thead>
+         <tbody>${rows.slice(0, 5).map(row => `<tr>${pc.map(c => `<td>${x(String(row[c] ?? ''))}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    }
   }
 
   // ── Launch ──
   async function launch() {
-    const btn = document.getElementById('btn-launch');
+    const btn   = document.getElementById('btn-launch');
     const errEl = document.getElementById('prev-err');
-    const mapping = {
-      firstName:     v('m-firstName'),
-      lastName:      v('m-lastName'),
-      phone:         v('m-phone'),
-      streetName:    v('m-streetName')    || null,
-      city:          v('m-city')          || null,
-      propertyValue: v('m-propertyValue') || null,
-    };
 
-    if (!mapping.firstName || !mapping.lastName || !mapping.phone) {
-      showErr(errEl, 'Please map First Name, Last Name, and Phone before launching.');
-      return;
+    let mapping;
+    if (isPhoneOnly) {
+      mapping = { firstName: '', lastName: '', phone: 'Phone', streetName: null, city: null, propertyValue: null };
+    } else {
+      mapping = {
+        firstName:     v('m-firstName'),
+        lastName:      v('m-lastName'),
+        phone:         v('m-phone'),
+        streetName:    v('m-streetName')    || null,
+        city:          v('m-city')          || null,
+        propertyValue: v('m-propertyValue') || null,
+      };
+      if (!mapping.firstName || !mapping.lastName || !mapping.phone) {
+        showErr(errEl, 'Please map First Name, Last Name, and Phone before launching.');
+        return;
+      }
     }
 
-    const limit = parseInt(document.getElementById('lim').value) || 80;
+    const limitVal = parseInt(document.getElementById('lim').value);
+    const limit    = limitVal > 0 ? limitVal : rows.length;
+    const useProbe = document.getElementById('use-probe').checked;
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spin"></span>Launching...';
     errEl.classList.remove('show');
@@ -550,14 +774,14 @@
     try {
       const res  = await fetch('/api/launch', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows: rows.slice(0, limit), mapping, limit })
+        body: JSON.stringify({ rows: rows.slice(0, limit), mapping, limit, useProbe })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Launch failed.');
 
       currentJobId = data.jobId;
       nInit = 0; nErr = 0;
-      initLive(data.total);
+      initLive(data.total, useProbe);
       show('live');
       connectSSE(data.jobId);
     } catch (err) {
@@ -568,18 +792,29 @@
   }
 
   // ── Live screen ──
-  function initLive(total) {
-    set('pc',0); set('pt',total); set('s-tot',total);
-    set('s-ok',0); set('s-err',0); set('s-pen',total);
+  function initLive(total, useProbe) {
+    set('pc', 0); set('pt', total); set('s-tot', total);
+    set('s-ok', 0); set('s-err', 0); set('s-pen', total);
     document.getElementById('pf').style.width = '0%';
     document.getElementById('call-list').innerHTML = '';
+    const banner = document.getElementById('probe-banner');
+    banner.classList.toggle('show', !!useProbe);
   }
 
   function connectSSE(jobId) {
     const es = new EventSource('/api/job/' + jobId + '/stream');
     es.onmessage = e => {
       const msg = JSON.parse(e.data);
-      if (msg.type === 'init') (msg.job.results||[]).forEach((r,i) => renderRow(i,r));
+      if (msg.type === 'init') (msg.job.results || []).forEach((r, i) => renderRow(i, r));
+      if (msg.type === 'probe') {
+        document.getElementById('probe-banner').classList.add('show');
+        document.getElementById('live-sub').textContent = msg.message || 'Filtering numbers via probe text...';
+      }
+      if (msg.type === 'probe_done') {
+        document.getElementById('probe-banner').classList.remove('show');
+        document.getElementById('live-sub').textContent =
+          `${msg.valid} valid numbers (${msg.dropped} dropped) — calling now...`;
+      }
       if (msg.type === 'update') {
         renderRow(msg.index, msg.result);
         const p = msg.progress;
@@ -588,7 +823,7 @@
         const done = p.current;
         set('pc', done); set('s-ok', nInit); set('s-err', nErr);
         set('s-pen', Math.max(0, p.total - done));
-        document.getElementById('pf').style.width = (done/p.total*100).toFixed(1)+'%';
+        document.getElementById('pf').style.width = (done / p.total * 100).toFixed(1) + '%';
       }
       if (msg.type === 'complete') { es.close(); finishLive(msg); }
     };
@@ -602,8 +837,8 @@
     document.getElementById('live-sub').textContent = '✅ All calls initiated!';
     setTimeout(() => {
       set('d-tot', total);
-      set('d-ok', msg.initiated ?? nInit);
-      set('d-err', msg.errors   ?? nErr);
+      set('d-ok',  msg.initiated ?? nInit);
+      set('d-err', msg.errors    ?? nErr);
       document.getElementById('done-sub').textContent =
         `Sarah called ${total} leads. Wait 10–15 min for calls to finish, then fetch your results.`;
       show('done');
@@ -612,39 +847,39 @@
 
   function renderRow(index, r) {
     const list = document.getElementById('call-list');
-    let el = document.getElementById('row-'+index);
-    const initials = [(r.firstName||r.name||'?')[0],(r.lastName||'')[0]].filter(Boolean).join('').toUpperCase()||'?';
-    const name  = r.name||[r.firstName,r.lastName].filter(Boolean).join(' ')||'—';
+    let el = document.getElementById('row-' + index);
+    const initials = [(r.firstName || r.name || '?')[0], (r.lastName || '')[0]].filter(Boolean).join('').toUpperCase() || '?';
+    const name  = r.name || [r.firstName, r.lastName].filter(Boolean).join(' ') || r.phone || '—';
     const statusMap = {
-      pending:   {cls:'badge-pending',  lbl:'Pending'},
-      calling:   {cls:'badge-calling',  lbl:'Calling…'},
-      initiated: {cls:'badge-initiated',lbl:'✓ Initiated'},
-      error:     {cls:'badge-error',    lbl:'✗ Error'},
+      pending:   { cls: 'badge-pending',   lbl: 'Pending' },
+      calling:   { cls: 'badge-calling',   lbl: 'Calling…' },
+      initiated: { cls: 'badge-initiated', lbl: '✓ Initiated' },
+      error:     { cls: 'badge-error',     lbl: '✗ Error' },
     };
-    const s = statusMap[r.status]||statusMap.pending;
+    const s = statusMap[r.status] || statusMap.pending;
     const html = `
       <div class="av">${x(initials)}</div>
       <div class="ci-info">
         <div class="ci-name">${x(name)}</div>
-        <div class="ci-phone">${x(r.phone||'')}</div>
+        <div class="ci-phone">${x(r.phone || '')}</div>
       </div>
-      <div class="badge ${s.cls}" title="${r.error?x(r.error):''}">
+      <div class="badge ${s.cls}" title="${r.error ? x(r.error) : ''}">
         <div class="bd"></div>${s.lbl}
       </div>`;
     if (el) { el.innerHTML = html; }
-    else { el = document.createElement('div'); el.className='ci'; el.id='row-'+index; el.innerHTML=html; list.appendChild(el); }
+    else { el = document.createElement('div'); el.className = 'ci'; el.id = 'row-' + index; el.innerHTML = html; list.appendChild(el); }
   }
 
   async function pollFallback(jobId) {
     try {
-      const job = await fetch('/api/job/'+jobId).then(r=>r.json());
-      (job.results||[]).forEach((r,i)=>renderRow(i,r));
-      if (job.status==='complete') {
-        const i=job.results.filter(r=>r.status==='initiated').length;
-        const e=job.results.filter(r=>r.status==='error').length;
-        finishLive({initiated:i,errors:e});
-      } else setTimeout(()=>pollFallback(jobId),2000);
-    } catch(_){ setTimeout(()=>pollFallback(jobId),2000); }
+      const job = await fetch('/api/job/' + jobId).then(r => r.json());
+      (job.results || []).forEach((r, i) => renderRow(i, r));
+      if (job.status === 'complete') {
+        const i = job.results.filter(r => r.status === 'initiated').length;
+        const e = job.results.filter(r => r.status === 'error').length;
+        finishLive({ initiated: i, errors: e });
+      } else setTimeout(() => pollFallback(jobId), 2000);
+    } catch (_) { setTimeout(() => pollFallback(jobId), 2000); }
   }
 
   // ── Fetch Results ──
@@ -657,39 +892,37 @@
     document.getElementById('btn-dl').disabled = true;
 
     try {
-      const data = await fetch('/api/results/'+currentJobId).then(r=>r.json());
+      const data    = await fetch('/api/results/' + currentJobId).then(r => r.json());
       const results = data.results || [];
-      const ts = data.fetchedAt ? new Date(data.fetchedAt).toLocaleString() : '';
+      const ts      = data.fetchedAt ? new Date(data.fetchedAt).toLocaleString() : '';
       document.getElementById('res-fetched-at').textContent = `Fetched at ${ts}`;
 
-      // Outcome summary
       const counts = {};
-      results.forEach(r => { counts[r.outcome] = (counts[r.outcome]||0)+1; });
+      results.forEach(r => { counts[r.outcome] = (counts[r.outcome] || 0) + 1; });
       const outcomeLabels = {
-        hot:'🔥 Hot', warm:'⚡ Warm', completed:'✅ Completed',
-        'no-answer':'📵 No Answer', 'not-interested':'🚫 Not Interested',
-        error:'⚠ Error', unknown:'❓ Unknown'
+        hot: '🔥 Hot', warm: '⚡ Warm', completed: '✅ Completed',
+        'no-answer': '📵 No Answer', 'not-interested': '🚫 Not Interested',
+        error: '⚠ Error', unknown: '❓ Unknown'
       };
       document.getElementById('outcome-summary').innerHTML =
-        Object.entries(counts).map(([k,n]) =>
-          `<span class="outcome-badge oc-${k}" style="font-size:13px;padding:5px 14px;">${outcomeLabels[k]||k}: <strong>${n}</strong></span>`
+        Object.entries(counts).map(([k, n]) =>
+          `<span class="outcome-badge oc-${k}" style="font-size:13px;padding:5px 14px;">${outcomeLabels[k] || k}: <strong>${n}</strong></span>`
         ).join('');
 
-      // Table
       document.getElementById('res-tbody').innerHTML = results.map(r => `
         <tr>
-          <td><strong>${x(r.name||'—')}</strong></td>
-          <td>${x(r.phone||'—')}</td>
-          <td><span class="outcome-badge oc-${r.outcome||'unknown'}">${outcomeLabels[r.outcome]||r.outcome||'—'}</span></td>
-          <td>${x(r.duration||'—')}</td>
-          <td style="font-size:12px;color:var(--mutedlt)">${x(r.endedReason||'—')}</td>
-          <td class="summary">${x(r.summary||'—')}</td>
+          <td><strong>${x(r.name || '—')}</strong></td>
+          <td>${x(r.phone || '—')}</td>
+          <td><span class="outcome-badge oc-${r.outcome || 'unknown'}">${outcomeLabels[r.outcome] || r.outcome || '—'}</span></td>
+          <td>${x(r.duration || '—')}</td>
+          <td style="font-size:12px;color:var(--mutedlt)">${x(r.endedReason || '—')}</td>
+          <td class="summary">${x(r.summary || '—')}</td>
         </tr>`).join('');
 
       document.getElementById('res-loading').style.display = 'none';
       document.getElementById('res-table-wrap').style.display = 'block';
       document.getElementById('btn-dl').disabled = false;
-    } catch(err) {
+    } catch (err) {
       document.getElementById('res-loading').textContent = 'Failed to fetch results: ' + err.message;
     }
   }
@@ -701,16 +934,22 @@
 
   function restart() {
     rows = []; cols = []; currentJobId = null; nInit = 0; nErr = 0;
+    isPhoneOnly = false; inputMode = 'csv';
     document.getElementById('file-input').value = '';
+    document.getElementById('pdf-input').value  = '';
+    document.getElementById('manual-ta').value  = '';
+    document.getElementById('pdf-status').style.display = 'none';
     document.getElementById('btn-launch').disabled = false;
     document.getElementById('btn-launch').innerHTML = '🚀&nbsp; Launch Sarah';
+    document.getElementById('use-probe').checked = false;
+    setTab('csv');
     show('upload');
   }
 
-  function v(id)       { return document.getElementById(id)?.value||''; }
-  function set(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
-  function showErr(el,msg){ el.textContent=msg; el.classList.add('show'); }
-  function x(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function v(id)        { return document.getElementById(id)?.value || ''; }
+  function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+  function showErr(el, msg) { el.textContent = msg; el.classList.add('show'); }
+  function x(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>
