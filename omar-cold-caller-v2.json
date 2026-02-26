@@ -1,0 +1,565 @@
+{
+  "name": "Omar AI Cold Caller v2 — Revel RE",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Caller Request — Revel Real Estate",
+        "formDescription": "Upload a CSV lead list for Jessica to call, qualify, and book. You'll receive an SMS when all calls are complete.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Lead File",
+              "fieldType": "file",
+              "acceptFileTypes": ".csv",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [-1200, 0],
+      "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+      "name": "Submit Lead Files",
+      "webhookId": "c7b5d515-653f-4c00-86ae-93cbfb6542df"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "Lead_File",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [-960, 0],
+      "id": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+      "name": "Extract Leads"
+    },
+    {
+      "parameters": {
+        "maxItems": 80
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [-720, 0],
+      "id": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+      "name": "Limit (Max 80 Leads)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [-480, 0],
+      "id": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+      "name": "Loop Over Leads"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=# Research Task\nYou are a world-class research assistant for Revel Real Estate, a luxury real estate agency in Southern California. Research the following warm lead and find personalization details for an outbound phone call.\n\nLead:\nFirst Name: {{ $json['First Name'] }}\nLast Name: {{ $json['Last Name'] }}\nCity: {{ $json.City }}\nCountry: {{ $json.Country }}\n\n# Output Rules\n- Find any public information: career, interests, social media, life events, or community involvement\n- Select the single most warm and personable detail suitable as a conversation opener\n- Write 2-4 sentences max\n- If no information is found, output exactly: no info\n- Do NOT include sensitive or speculative information"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [-240, 240],
+      "id": "e5f6a7b8-c9d0-4123-e4f5-a6b7c8d9e0f1",
+      "name": "Research Lead",
+      "credentials": {
+        "perplexityApi": {
+          "id": "AQbuCtb1ctxVXr3C",
+          "name": "Ahmed API For Omar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prep-1",
+              "name": "firstName",
+              "value": "={{ $('Loop Over Leads').item.json['First Name'] || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-2",
+              "name": "lastName",
+              "value": "={{ $('Loop Over Leads').item.json['Last Name'] || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-3",
+              "name": "fullName",
+              "value": "={{ (($('Loop Over Leads').item.json['First Name'] || '') + ' ' + ($('Loop Over Leads').item.json['Last Name'] || '')).trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-4",
+              "name": "phone",
+              "value": "={{ $('Loop Over Leads').item.json.Phone || $('Loop Over Leads').item.json.Number || $('Loop Over Leads').item.json['Phone Number'] || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-5",
+              "name": "research",
+              "value": "={{ ($json.choices?.[0]?.message?.content || 'no info').replace(/\"/g, \"'\").replace(/\\n/g, ' ').substring(0, 500) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [0, 240],
+      "id": "f6a7b8c9-d0e1-4234-f5a6-b7c8d9e0f1a2",
+      "name": "Prepare Lead Context"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/call",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 20ff68cc-aa69-4eb0-94d9-29205b281068"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"assistantId\": \"54919ea0-d4cc-428f-983b-c8cbd61b2eb9\",\n  \"assistantOverrides\": {\n    \"variableValues\": {\n      \"name\": \"{{ $json.firstName }}\",\n      \"research\": \"{{ $json.research }}\"\n    }\n  },\n  \"customer\": {\n    \"name\": \"{{ $json.fullName }}\",\n    \"number\": \"+1{{ $json.phone }}\"\n  },\n  \"phoneNumberId\": \"0968df07-8bba-489e-9174-ef977c4a7764\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [240, 240],
+      "id": "a7b8c9d0-e1f2-4345-a6b7-c8d9e0f1a2b3",
+      "name": "Initiate Call (VAPI)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "store-1",
+              "name": "callId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "store-2",
+              "name": "leadName",
+              "value": "={{ $('Prepare Lead Context').item.json.fullName }}",
+              "type": "string"
+            },
+            {
+              "id": "store-3",
+              "name": "leadPhone",
+              "value": "={{ $('Prepare Lead Context').item.json.phone }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 240],
+      "id": "b8c9d0e1-f2a3-4456-b7c8-d9e0f1a2b3c4",
+      "name": "Store Call ID"
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [720, 240],
+      "id": "c9d0e1f2-a3b4-4567-c8d9-e0f1a2b3c4d5",
+      "name": "Wait 5 min (Call in Progress)",
+      "webhookId": "d0e1f2a3-b4c5-4678-d9e0-f1a2b3c4d5e6"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.vapi.ai/call/{{ $json.callId || $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 20ff68cc-aa69-4eb0-94d9-29205b281068"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [960, 240],
+      "id": "d0e1f2a3-b4c5-4901-d9e0-f1a2b3c4d5e6",
+      "name": "Fetch Completed Call"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "if-cond-1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ended",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1200, 240],
+      "id": "cc11dd22-ee33-4ff4-aa55-bb66cc77dd88",
+      "name": "Call Ended?"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1200, 480],
+      "id": "ff99ee88-dd77-4cc6-bb55-aa44ff33ee22",
+      "name": "Wait 2 min (Retry)",
+      "webhookId": "aa11bb22-cc33-4dd4-ee55-ff66aa77bb88"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Analyze this AI sales call for Revel Real Estate and classify the outcome.\n\nLead: {{ $('Store Call ID').item.json.leadName }}\nCall Status: {{ $json.status }}\nEnded Because: {{ $json.endedReason }}\nCall Summary: {{ $json.analysis.summary }}\n\nClassify the call as exactly one of:\n- \"success\" — lead engaged positively, showed interest, or booked/agreed to a meeting\n- \"callback\" — lead was unavailable, asked to be called later, or went to voicemail\n- \"fail\" — wrong number, hang-up immediately, refused, or requested DNC\n\nThen write 2-3 sentences summarising what happened on the call.\n\nExample output:\n\"success. James answered and expressed strong interest in Malibu properties. He agreed to a 15-minute discovery call Thursday at 10am and asked Jessica to send a market report.\""
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [1680, 240],
+      "id": "e1f2a3b4-c5d6-4789-e0f1-a2b3c4d5e6f7",
+      "name": "Analyze Call",
+      "credentials": {
+        "openAiApi": {
+          "id": "vKPTa39YlqJvFzf3",
+          "name": "HalalAutomation API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "h7BMHqRbISWw9BNt",
+          "mode": "list",
+          "cachedResultName": "AI Call Tracker",
+          "cachedResultUrl": "/projects/W85DQ5D7qZmpFpPZ/datatables/h7BMHqRbISWw9BNt"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "leadName": "={{ $('Store Call ID').item.json.leadName }}",
+            "leadPhone": "={{ $('Store Call ID').item.json.leadPhone }}",
+            "callStatus": "={{ $json.output[0].content[0].text }}",
+            "callSummary": "={{ $('Fetch Completed Call').item.json.analysis.summary }}",
+            "endReason": "={{ $('Fetch Completed Call').item.json.endedReason }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "leadName",
+              "displayName": "leadName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "leadPhone",
+              "displayName": "leadPhone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "callStatus",
+              "displayName": "callStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "callSummary",
+              "displayName": "callSummary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "endReason",
+              "displayName": "endReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1920, 240],
+      "id": "f2a3b4c5-d6e7-4890-f1a2-b3c4d5e6f7a8",
+      "name": "Update Lead Tracker"
+    },
+    {
+      "parameters": {
+        "from": "+1 (424) 855 1875",
+        "to": "(805) 268-3615",
+        "message": "Hi Omar, Jessica just finished calling your entire lead list. Log in to check the AI Call Tracker for results and any new bookings!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [-480, -240],
+      "id": "a3b4c5d6-e7f8-4901-a2b3-c4d5e6f7a8b9",
+      "name": "All Calls Complete (SMS)",
+      "credentials": {
+        "twilioApi": {
+          "id": "WhVb7Yl4B3PKMm5i",
+          "name": "Omar Realtor Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Submit Lead Files": {
+      "main": [
+        [
+          {
+            "node": "Extract Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Leads": {
+      "main": [
+        [
+          {
+            "node": "Limit (Max 80 Leads)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit (Max 80 Leads)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Leads": {
+      "main": [
+        [
+          {
+            "node": "All Calls Complete (SMS)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Research Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Lead": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lead Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Lead Context": {
+      "main": [
+        [
+          {
+            "node": "Initiate Call (VAPI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initiate Call (VAPI)": {
+      "main": [
+        [
+          {
+            "node": "Store Call ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Call ID": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 min (Call in Progress)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 min (Call in Progress)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Completed Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Completed Call": {
+      "main": [
+        [
+          {
+            "node": "Call Ended?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Ended?": {
+      "main": [
+        [
+          {
+            "node": "Analyze Call",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 2 min (Retry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 min (Retry)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Completed Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Call": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Tracker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Tracker": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5b7a3ae3b9fd90213763f4c4b11f3546637b4a2b1e3bdd8d253076abe85abead"
+  }
+}
