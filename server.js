@@ -163,7 +163,7 @@ async function processJob(jobId, leads) {
 
   // Completion SMS
   await sendSMS(process.env.TWILIO_TO,
-    `✅ Sarah finished calling ${leads.length} leads for Revel Real Estate.\n${initiated} calls initiated, ${errors} errors.\nCheck your dashboard for hot leads!`
+    `✅ Sarah finished calling ${leads.length} leads for Rad Realty.\n${initiated} calls initiated, ${errors} errors.\nCheck your dashboard for hot leads!`
   );
 }
 
@@ -403,7 +403,7 @@ async function setupWebhook() {
 // ─── Start ────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
-  console.log(`\n  Sarah AI Caller — Revel Real Estate`);
+  console.log(`\n  Sarah AI Caller — Rad Realty`);
   console.log(`  Running at: http://localhost:${PORT}`);
   await setupWebhook();
   console.log();
