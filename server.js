@@ -23,9 +23,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function formatPhone(raw) {
   const d = String(raw).replace(/\D/g, '');
+  if (!d) return '';
   if (d.length === 11 && d[0] === '1') return `+${d}`;
   if (d.length === 10) return `+1${d}`;
-  return `+1${d.slice(-10)}`;
+  if (d.length > 11) return `+1${d.slice(-10)}`; // strip country code junk
+  return `+1${d}`;
 }
 
 function classifyOutcome(call) {
@@ -230,7 +232,13 @@ app.post('/api/launch', (req, res) => {
     propertyValue: String(row[mapping.propertyValue] || '').trim(),
   })).filter(l => l.phone);
 
-  if (!leads.length) return res.status(400).json({ error: 'No leads with phone numbers found. Check your column mapping.' });
+  if (!leads.length) {
+    const sample = rows[0] || {};
+    const phoneVal = mapping.phone ? sample[mapping.phone] : 'no column mapped';
+    return res.status(400).json({
+      error: `No leads with phone numbers found. Phone column mapped to "${mapping.phone}", sample value: "${phoneVal}". Check your column mapping.`
+    });
+  }
 
   const jobId = uuidv4();
   jobs.set(jobId, {
