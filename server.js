@@ -81,7 +81,7 @@ async function initiateCall(lead) {
       assistantId: process.env.VAPI_ASSISTANT_ID,
       assistantOverrides: {
         variableValues: {
-          first_name:       lead.firstName || lead.name || '',
+          first_name:       lead.firstName || lead.name || 'there',
           street_name:      lead.streetName || lead.city || '',
           property_address: lead.streetName || lead.city || '',
           property_value:   lead.propertyValue || '',

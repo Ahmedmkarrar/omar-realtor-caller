@@ -436,10 +436,48 @@
   function parseFile(file) {
     if (!file.name.toLowerCase().endsWith('.csv')) { alert('Please upload a .csv file.'); return; }
     Papa.parse(file, {
-      header: true, skipEmptyLines: true,
+      header: false, skipEmptyLines: true,
       complete(res) {
         if (!res.data.length) { alert('CSV is empty.'); return; }
-        rows = res.data; cols = res.meta.fields || [];
+
+        const firstRow = res.data[0];
+
+        // Detect if first row looks like a header (non-numeric values)
+        const firstCellIsPhone = /^\+?\d[\d\s\-().]{6,}$/.test(String(firstRow[0] || '').trim());
+
+        if (firstCellIsPhone) {
+          // Headerless CSV — treat columns by position
+          // Try to detect: phone-only, or first/last/phone layout
+          const numCols = firstRow.length;
+          if (numCols === 1) {
+            // Just phone numbers
+            cols = ['Phone'];
+            rows = res.data.map(r => ({ 'Phone': String(r[0] || '').trim() }));
+          } else if (numCols === 2) {
+            cols = ['Phone', 'Col2'];
+            rows = res.data.map(r => ({ 'Phone': String(r[0]||'').trim(), 'Col2': String(r[1]||'').trim() }));
+          } else {
+            // 3+ cols — assume First Name, Last Name, Phone
+            cols = ['First Name', 'Last Name', 'Phone', ...Array.from({length: numCols-3}, (_,i) => `Col${i+4}`)];
+            rows = res.data.map(r => ({
+              'First Name': String(r[0]||'').trim(),
+              'Last Name':  String(r[1]||'').trim(),
+              'Phone':      String(r[2]||'').trim(),
+              ...Object.fromEntries(Array.from({length: numCols-3}, (_,i) => [`Col${i+4}`, String(r[i+3]||'').trim()]))
+            }));
+          }
+        } else {
+          // Has headers — reparse with header:true
+          Papa.parse(file, {
+            header: true, skipEmptyLines: true,
+            complete(res2) {
+              rows = res2.data; cols = res2.meta.fields || [];
+              buildPreview(file.name); show('preview');
+            }
+          });
+          return;
+        }
+
         buildPreview(file.name); show('preview');
       },
       error() { alert('Failed to read the CSV.'); }
