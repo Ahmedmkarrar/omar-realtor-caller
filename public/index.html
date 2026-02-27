@@ -509,13 +509,13 @@
             <div class="mode-sub">Choose how Sarah contacts each lead</div>
           </div>
           <div class="mode-btns">
-            <button class="mode-btn active call-active" id="mode-call-btn" onclick="setMode('call')">📞 Call</button>
-            <button class="mode-btn" id="mode-sms-btn" onclick="setMode('sms')">💬 Text</button>
+            <button class="mode-btn" id="mode-call-btn" onclick="setMode('call')">📞 Call</button>
+            <button class="mode-btn active sms-active" id="mode-sms-btn" onclick="setMode('sms')">💬 Text</button>
           </div>
         </div>
 
         <!-- SMS message template (shown in Text mode) -->
-        <div id="sms-tmpl-wrap" class="sms-tmpl-wrap" style="display:none;">
+        <div id="sms-tmpl-wrap" class="sms-tmpl-wrap">
           <div class="slbl">Message Template</div>
           <textarea id="sms-tmpl" class="sms-tmpl-ta" oninput="updateCharCount()"
             >Hi {name}! This is Sarah from Rad Realty 🏠 We buy homes in your area for cash — fast closings, no repairs needed. Would you be open to a quick chat? Just reply back!</textarea>
@@ -526,7 +526,7 @@
         </div>
 
         <!-- Probe text toggle (call mode only) -->
-        <div id="probe-toggle-wrap" class="toggle-row">
+        <div id="probe-toggle-wrap" class="toggle-row" style="display:none;">
           <div class="toggle-info">
             <div class="toggle-lbl">Probe text filter</div>
             <div class="toggle-sub">Sends a test SMS to each number first — drops disconnected lines before calling. Uses Twilio credits.</div>
@@ -539,12 +539,12 @@
 
         <!-- Limit row (no cap) -->
         <div class="lim-row">
-          <span>Leads to <span id="lim-action-lbl">call</span> — <strong id="avail">0</strong> available</span>
+          <span>Leads to <span id="lim-action-lbl">text</span> — <strong id="avail">0</strong> available</span>
           <input type="number" class="lim-input" id="lim" min="1" title="Leave blank or set to total for all leads" />
         </div>
 
         <div class="errbanner" id="prev-err"></div>
-        <button class="btn-launch" id="btn-launch" onclick="launch()">🚀&nbsp; Launch Sarah</button>
+        <button class="btn-launch" id="btn-launch" onclick="launch()">💬&nbsp; Launch Text Blast</button>
       </div>
     </div>
   </div>
@@ -686,7 +686,7 @@
   let nInit = 0, nErr = 0;
   let currentJobId = null;
   let inputMode    = 'manual'; // 'csv' | 'pdf' | 'manual'
-  let currentMode  = 'call';   // 'call' | 'sms'
+  let currentMode  = 'sms';   // 'call' | 'sms'
   let isPhoneOnly  = false;
   let smsAllData   = [];       // full SMS conversation data for filtering
   let smsRefreshTimer = null;
@@ -1274,10 +1274,13 @@
     document.getElementById('btn-launch').disabled  = false;
     document.getElementById('btn-launch').innerHTML = '🚀&nbsp; Launch Sarah';
     document.getElementById('use-probe').checked    = false;
-    setMode('call');
+    setMode('sms');
     setTab('manual');
     show('upload');
   }
+
+  // Init char count on load
+  updateCharCount();
 
   function v(id)        { return document.getElementById(id)?.value || ''; }
   function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
