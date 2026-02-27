@@ -9,13 +9,16 @@ const app    = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── Stores ───────────────────────────────────────────────────────────────────
-const jobs       = new Map();
-const sseClients = new Map();
-const callIndex  = new Map();
-const smsSent    = new Set();
+const jobs         = new Map();
+const sseClients   = new Map();
+const callIndex    = new Map();
+const smsSent      = new Set();
+const conversations = new Map(); // phone → [{direction:'out'|'in', body, timestamp}]
+const phoneToJob    = new Map(); // formatted-phone → {jobId, leadIndex}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function broadcast(jobId, data) {
@@ -44,6 +47,15 @@ function classifyOutcome(call) {
   if (['maybe','follow','later','think about','consider','down the road'].some(w => summary.includes(w))) return 'warm';
   if (reason.includes('ended-call')) return 'completed';
   return 'completed';
+}
+
+// ─── Classify SMS reply ───────────────────────────────────────────────────────
+function classifyReply(body) {
+  const b = (body || '').toLowerCase();
+  if (/\b(yes|sure|interested|how much|make an offer|absolutely|definitely|open to it|call me|love to|sounds good|let'?s talk|go ahead|please|why not)\b/.test(b)) return 'hot';
+  if (/\b(maybe|not sure|think about|sometime|later|possibly|depends)\b/.test(b)) return 'warm';
+  if (/\b(no\b|stop|remove|unsubscribe|not interested|opt out|don'?t contact|wrong number|leave me alone)\b/.test(b)) return 'not-interested';
+  return 'replied';
 }
 
 // ─── Twilio SMS ───────────────────────────────────────────────────────────────
@@ -265,6 +277,56 @@ function scheduleRetry(info) {
   }, delayMs);
 }
 
+// ─── Core: process SMS blast job ─────────────────────────────────────────────
+async function processSMSJob(jobId, leads) {
+  const job = jobs.get(jobId);
+  if (!job) return;
+  job.status = 'running';
+
+  const template = job.messageTemplate ||
+    `Hi {name}! This is Sarah from Rad Realty 🏠 We buy homes in your area for cash — fast closings, no repairs needed. Would you be open to a quick chat? Just reply back!`;
+
+  for (let i = 0; i < leads.length; i++) {
+    if (!jobs.has(jobId)) break;
+
+    const lead     = leads[i];
+    const phone    = formatPhone(lead.phone);
+    const name     = lead.firstName || 'there';
+    const leadName = [lead.firstName, lead.lastName].filter(Boolean).join(' ') || lead.name || '';
+    lead.name      = leadName;
+
+    job.results[i] = { ...lead, name: leadName, phone, status: 'sending' };
+    broadcast(jobId, { type: 'update', index: i, result: job.results[i], progress: { current: i, total: leads.length } });
+
+    try {
+      const body = template.replace(/\{name\}/gi, name).replace(/\{first_name\}/gi, name);
+      await getTwilio().messages.create({ from: process.env.TWILIO_FROM, to: phone, body });
+
+      if (!conversations.has(phone)) conversations.set(phone, []);
+      conversations.get(phone).push({ direction: 'out', body, timestamp: new Date().toISOString() });
+      phoneToJob.set(phone, { jobId, leadIndex: i });
+
+      job.results[i] = { ...lead, name: leadName, phone, status: 'sent', sentAt: new Date().toISOString(), outcome: 'sent' };
+    } catch (err) {
+      job.results[i] = { ...lead, name: leadName, phone, status: 'error', error: err.message, outcome: 'error' };
+    }
+
+    broadcast(jobId, { type: 'update', index: i, result: job.results[i], progress: { current: i + 1, total: leads.length } });
+    if (i < leads.length - 1) await sleep(parseInt(process.env.CALL_DELAY_MS || '1500'));
+  }
+
+  job.status = 'complete';
+  const sent   = job.results.filter(r => r.status === 'sent').length;
+  const errors = job.results.filter(r => r.status === 'error').length;
+  broadcast(jobId, { type: 'complete', sent, errors, total: leads.length });
+  (sseClients.get(jobId) || []).forEach(r => { try { r.end(); } catch (_) {} });
+  sseClients.delete(jobId);
+
+  await sendSMS(process.env.TWILIO_TO,
+    `✅ Sarah texted ${sent} leads for Rad Realty.\n${errors} failed.\nYou'll get an alert every time someone replies!`
+  );
+}
+
 // ─── Core: process job ────────────────────────────────────────────────────────
 async function processJob(jobId, leads, useProbe) {
   const job = jobs.get(jobId);
@@ -337,11 +399,14 @@ app.post('/api/parse-pdf', upload.single('pdf'), async (req, res) => {
 
 // ─── POST /api/launch ────────────────────────────────────────────────────────
 app.post('/api/launch', (req, res) => {
-  const { rows, mapping, limit, useProbe = false } = req.body;
+  const { rows, mapping, limit, useProbe = false, mode = 'call', messageTemplate } = req.body;
   if (!rows?.length || !mapping) return res.status(400).json({ error: 'Missing rows or mapping.' });
 
-  const missing = ['VAPI_API_KEY','VAPI_ASSISTANT_ID','VAPI_PHONE_NUMBER_ID'].find(k => !process.env[k]);
-  if (missing) return res.status(500).json({ error: `${missing} not configured.` });
+  if (mode === 'call') {
+    const missing = ['VAPI_API_KEY','VAPI_ASSISTANT_ID','VAPI_PHONE_NUMBER_ID'].find(k => !process.env[k]);
+    if (missing) return res.status(500).json({ error: `${missing} not configured.` });
+  }
+  if (!process.env.TWILIO_ACCOUNT_SID) return res.status(500).json({ error: 'TWILIO_ACCOUNT_SID not configured.' });
 
   // No hard limit — use what the user specifies, or all leads
   const cap = limit ? parseInt(limit) : rows.length;
@@ -364,13 +429,18 @@ app.post('/api/launch', (req, res) => {
 
   const jobId = uuidv4();
   jobs.set(jobId, {
-    status: 'pending', total: leads.length,
+    status: 'pending', total: leads.length, mode,
+    messageTemplate: messageTemplate || null,
     results: leads.map(l => ({ ...l, status: 'pending' })),
     createdAt: new Date().toISOString()
   });
 
-  processJob(jobId, leads, useProbe);
-  res.json({ jobId, total: leads.length });
+  if (mode === 'sms') {
+    processSMSJob(jobId, leads);
+  } else {
+    processJob(jobId, leads, useProbe);
+  }
+  res.json({ jobId, total: leads.length, mode });
 });
 
 // ─── POST /api/webhook/vapi ───────────────────────────────────────────────────
@@ -407,6 +477,59 @@ app.post('/api/webhook/vapi', async (req, res) => {
       await sendEmailReport(job2.results, job2.total);
     }
   }
+});
+
+// ─── POST /api/webhook/sms — incoming replies from leads ─────────────────────
+app.post('/api/webhook/sms', (req, res) => {
+  // Respond immediately with empty TwiML so Twilio doesn't complain
+  res.setHeader('Content-Type', 'text/xml');
+  res.send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+
+  const from = req.body?.From;
+  const body = (req.body?.Body || '').trim();
+  if (!from || !body) return;
+
+  const timestamp = new Date().toISOString();
+  if (!conversations.has(from)) conversations.set(from, []);
+  conversations.get(from).push({ direction: 'in', body, timestamp });
+
+  const outcome = classifyReply(body);
+  const emojiMap = { hot: '🔥', warm: '⚡', 'not-interested': '🚫', replied: '💬' };
+
+  // Update job result
+  const info = phoneToJob.get(from);
+  let leadName = from;
+  if (info) {
+    const job = jobs.get(info.jobId);
+    if (job?.results[info.leadIndex]) {
+      const r = job.results[info.leadIndex];
+      leadName      = r.name || from;
+      r.replied     = true;
+      r.lastReply   = body;
+      r.repliedAt   = timestamp;
+      r.outcome     = outcome;
+      // Push live update to any open dashboard tabs
+      broadcast(info.jobId, { type: 'reply', index: info.leadIndex, result: r });
+    }
+  }
+
+  // Alert Omar
+  sendSMS(process.env.TWILIO_TO,
+    `${emojiMap[outcome] || '💬'} Reply from ${leadName}\n📞 ${from}\n\n"${body}"\n\nLog in to see the full dashboard!`
+  );
+});
+
+// ─── GET /api/conversations/:jobId ───────────────────────────────────────────
+app.get('/api/conversations/:jobId', (req, res) => {
+  const job = jobs.get(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  const data = job.results.map(r => ({
+    ...r,
+    thread: conversations.get(r.phone) || []
+  }));
+
+  res.json({ conversations: data, mode: job.mode, fetchedAt: new Date().toISOString() });
 });
 
 // ─── GET /api/job/:jobId/stream ───────────────────────────────────────────────

@@ -171,6 +171,85 @@
       padding: 2px 8px; font-size: 11px; color: var(--muted); font-weight: 600; flex-shrink: 0; min-width: 28px; text-align: center; }
     .phone-more { padding: 10px 14px; font-size: 12px; color: var(--muted); text-align: center; font-style: italic; }
 
+    /* ── Mode toggle (Call / Text) ── */
+    .mode-row { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 14px 16px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--rs); margin-bottom: 14px; }
+    .mode-info .mode-lbl { font-size: 13px; font-weight: 600; }
+    .mode-info .mode-sub { font-size: 12px; color: var(--mutedlt); margin-top: 3px; }
+    .mode-btns { display: flex; gap: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+    .mode-btn { padding: 6px 16px; border: none; border-radius: 6px; font-family: inherit; font-size: 13px;
+      font-weight: 600; cursor: pointer; color: var(--mutedlt); background: none; transition: all .15s; }
+    .mode-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+    .mode-btn.active.call-active { color: var(--gold); }
+    .mode-btn.active.sms-active  { color: var(--ok); }
+
+    /* ── SMS Template editor ── */
+    .sms-tmpl-wrap { margin-bottom: 14px; }
+    .sms-tmpl-ta { width: 100%; height: 100px; padding: 12px 14px; background: var(--bg);
+      border: 1px solid var(--borderlt); border-radius: var(--rs); color: var(--text);
+      font-family: inherit; font-size: 13px; line-height: 1.6; resize: none; transition: border-color .15s; }
+    .sms-tmpl-ta:focus { outline: none; border-color: var(--gold); }
+    .sms-tmpl-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .char-warn { color: var(--warn); }
+
+    /* ── SMS Results dashboard ── */
+    .sms-stats { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 24px;
+      border-bottom: 1px solid var(--border); }
+    .sms-stat { padding: 10px 16px; border-radius: var(--rs); border: 1px solid var(--border);
+      text-align: center; background: var(--surface2); min-width: 80px; }
+    .sms-stat-n { font-size: 22px; font-weight: 800; }
+    .sms-stat-l { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+    .sms-filters { padding: 12px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn { padding: 5px 12px; border: 1px solid var(--borderlt); border-radius: 100px;
+      background: none; color: var(--mutedlt); font-family: inherit; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .15s; }
+    .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-btn.active { border-color: var(--gold); color: var(--gold); background: var(--goldglow); }
+    .btn-refresh { padding: 5px 14px; background: none; border: 1px solid var(--borderlt);
+      border-radius: var(--rs); color: var(--mutedlt); font-family: inherit; font-size: 12px;
+      font-weight: 600; cursor: pointer; transition: all .15s; }
+    .btn-refresh:hover { border-color: var(--gold); color: var(--gold); }
+
+    .sms-lead-list { max-height: 600px; overflow-y: auto; }
+    .sms-lead-list::-webkit-scrollbar { width: 5px; }
+    .sms-lead-list::-webkit-scrollbar-thumb { background: var(--borderlt); border-radius: 100px; }
+    .sms-lead { border-bottom: 1px solid var(--border); transition: background .15s; }
+    .sms-lead:last-child { border-bottom: none; }
+    .sms-lead-top { display: flex; align-items: center; gap: 12px; padding: 14px 24px; cursor: pointer; }
+    .sms-lead-top:hover { background: rgba(255,255,255,.015); }
+    .sms-lead-av { width: 38px; height: 38px; border-radius: 50%; background: var(--surface2);
+      border: 1px solid var(--borderlt); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--mutedlt); flex-shrink: 0; }
+    .sms-lead-info { flex: 1; min-width: 0; }
+    .sms-lead-name { font-size: 14px; font-weight: 600; }
+    .sms-lead-phone { font-size: 12px; color: var(--mutedlt); margin-top: 1px; }
+    .sms-lead-preview { font-size: 12px; color: var(--mutedlt); margin-top: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+    .sms-lead-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .sms-time { font-size: 11px; color: var(--muted); }
+
+    .sms-thread { display: none; padding: 0 24px 16px 24px; background: rgba(0,0,0,.15); }
+    .sms-thread.open { display: block; }
+    .sms-thread-inner { border: 1px solid var(--border); border-radius: var(--rs); overflow: hidden; }
+    .sms-msg { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .sms-msg:last-child { border-bottom: none; }
+    .sms-msg-dir { font-size: 11px; font-weight: 600; flex-shrink: 0; padding-top: 2px;
+      min-width: 40px; text-transform: uppercase; letter-spacing: .5px; }
+    .sms-msg.out .sms-msg-dir { color: var(--gold); }
+    .sms-msg.in  .sms-msg-dir { color: var(--ok); }
+    .sms-msg-body { flex: 1; font-size: 13px; line-height: 1.5; }
+    .sms-msg-time { font-size: 11px; color: var(--muted); flex-shrink: 0; padding-top: 2px; }
+    .sms-thread-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .btn-sms-action { padding: 7px 14px; border-radius: var(--rs); font-family: inherit; font-size: 12px;
+      font-weight: 600; cursor: pointer; transition: all .15s; }
+    .btn-call-back { background: var(--goldglow2); border: 1px solid rgba(212,165,52,.3);
+      color: var(--gold); }
+    .btn-call-back:hover { background: var(--goldglow); }
+
     /* ── Toggle switch ── */
     .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px;
       padding: 14px 16px; background: var(--surface2); border: 1px solid var(--border);
@@ -423,8 +502,31 @@
           <div class="phone-list-wrap" id="phone-list"></div>
         </div>
 
-        <!-- Probe text toggle -->
-        <div class="toggle-row">
+        <!-- Mode toggle: Call / Text -->
+        <div class="mode-row">
+          <div class="mode-info">
+            <div class="mode-lbl">Outreach Mode</div>
+            <div class="mode-sub">Choose how Sarah contacts each lead</div>
+          </div>
+          <div class="mode-btns">
+            <button class="mode-btn active call-active" id="mode-call-btn" onclick="setMode('call')">📞 Call</button>
+            <button class="mode-btn" id="mode-sms-btn" onclick="setMode('sms')">💬 Text</button>
+          </div>
+        </div>
+
+        <!-- SMS message template (shown in Text mode) -->
+        <div id="sms-tmpl-wrap" class="sms-tmpl-wrap" style="display:none;">
+          <div class="slbl">Message Template</div>
+          <textarea id="sms-tmpl" class="sms-tmpl-ta" oninput="updateCharCount()"
+            >Hi {name}! This is Sarah from Rad Realty 🏠 We buy homes in your area for cash — fast closings, no repairs needed. Would you be open to a quick chat? Just reply back!</textarea>
+          <div class="sms-tmpl-meta">
+            <span>{name} = first name, or "there" if unknown</span>
+            <span id="char-count">0 / 160</span>
+          </div>
+        </div>
+
+        <!-- Probe text toggle (call mode only) -->
+        <div id="probe-toggle-wrap" class="toggle-row">
           <div class="toggle-info">
             <div class="toggle-lbl">Probe text filter</div>
             <div class="toggle-sub">Sends a test SMS to each number first — drops disconnected lines before calling. Uses Twilio credits.</div>
@@ -437,7 +539,7 @@
 
         <!-- Limit row (no cap) -->
         <div class="lim-row">
-          <span>Leads to call — <strong id="avail">0</strong> available</span>
+          <span>Leads to <span id="lim-action-lbl">call</span> — <strong id="avail">0</strong> available</span>
           <input type="number" class="lim-input" id="lim" min="1" title="Leave blank or set to total for all leads" />
         </div>
 
@@ -536,14 +638,58 @@
     </div>
   </div>
 
+  <!-- ══ SCREEN 6: SMS DASHBOARD ══ -->
+  <div id="screen-sms" class="screen">
+    <div class="card">
+      <div class="res-top">
+        <div>
+          <h2>💬 Text Campaign</h2>
+          <p id="sms-fetched-at"></p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn-refresh" id="btn-sms-refresh" onclick="loadSMSDashboard()">⟳ Refresh</button>
+          <button class="btn-dl" onclick="downloadSMSCSV()">⬇ Export</button>
+          <button class="btn-new" onclick="restart()">New List</button>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="sms-stats" id="sms-stats"></div>
+
+      <!-- Filters -->
+      <div class="sms-filters">
+        <div class="filter-btns" id="sms-filter-btns">
+          <button class="filter-btn active" onclick="filterSMS('all', this)">All</button>
+          <button class="filter-btn" onclick="filterSMS('hot', this)">🔥 Hot</button>
+          <button class="filter-btn" onclick="filterSMS('warm', this)">⚡ Warm</button>
+          <button class="filter-btn" onclick="filterSMS('replied', this)">💬 Replied</button>
+          <button class="filter-btn" onclick="filterSMS('not-interested', this)">🚫 Not Int.</button>
+          <button class="filter-btn" onclick="filterSMS('sent', this)">📤 No Reply</button>
+          <button class="filter-btn" onclick="filterSMS('error', this)">⚠ Errors</button>
+        </div>
+        <div id="sms-refresh-timer" style="font-size:12px;color:var(--muted);"></div>
+      </div>
+
+      <div id="sms-loading" class="res-loading" style="display:none;">
+        <span class="spin spin-gold"></span> Loading...
+      </div>
+
+      <!-- Lead list -->
+      <div class="sms-lead-list" id="sms-lead-list"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
   let rows = [], cols = [];
   let nInit = 0, nErr = 0;
   let currentJobId = null;
-  let inputMode = 'manual'; // 'csv' | 'pdf' | 'manual'
-  let isPhoneOnly = false;
+  let inputMode    = 'manual'; // 'csv' | 'pdf' | 'manual'
+  let currentMode  = 'call';   // 'call' | 'sms'
+  let isPhoneOnly  = false;
+  let smsAllData   = [];       // full SMS conversation data for filtering
+  let smsRefreshTimer = null;
 
   // ── Screens ──
   function show(id) {
@@ -565,6 +711,170 @@
     isPhoneOnly = false;
     show('upload');
     setTab(inputMode);
+  }
+
+  // ── Mode toggle: Call / Text ──
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('mode-call-btn').classList.toggle('active', mode === 'call');
+    document.getElementById('mode-call-btn').classList.toggle('call-active', mode === 'call');
+    document.getElementById('mode-sms-btn').classList.toggle('active', mode === 'sms');
+    document.getElementById('mode-sms-btn').classList.toggle('sms-active', mode === 'sms');
+    document.getElementById('sms-tmpl-wrap').style.display     = mode === 'sms' ? 'block' : 'none';
+    document.getElementById('probe-toggle-wrap').style.display = mode === 'call' ? 'flex' : 'none';
+    const limLbl = document.getElementById('lim-action-lbl');
+    if (limLbl) limLbl.textContent = mode === 'sms' ? 'text' : 'call';
+    document.getElementById('btn-launch').textContent = mode === 'sms' ? '💬  Launch Text Blast' : '🚀  Launch Sarah';
+    updateCharCount();
+  }
+
+  function updateCharCount() {
+    const ta = document.getElementById('sms-tmpl');
+    if (!ta) return;
+    const len = ta.value.length;
+    const el  = document.getElementById('char-count');
+    if (!el) return;
+    el.textContent = `${len} / 160`;
+    el.className   = len > 160 ? 'char-warn' : '';
+  }
+
+  // ── SMS Dashboard ──
+  async function loadSMSDashboard() {
+    if (!currentJobId) return;
+    document.getElementById('sms-loading').style.display = 'block';
+    document.getElementById('sms-lead-list').innerHTML   = '';
+
+    try {
+      const data = await fetch('/api/conversations/' + currentJobId).then(r => r.json());
+      smsAllData = data.conversations || [];
+      const ts   = data.fetchedAt ? new Date(data.fetchedAt).toLocaleTimeString() : '';
+      document.getElementById('sms-fetched-at').textContent = `Last updated: ${ts}`;
+      renderSMSDashboard(smsAllData);
+    } catch (e) {
+      document.getElementById('sms-loading').textContent = 'Failed to load: ' + e.message;
+    }
+    document.getElementById('sms-loading').style.display = 'none';
+  }
+
+  function renderSMSDashboard(data) {
+    // Sort: replied first, then sent, then errors
+    const order = { hot: 0, warm: 1, replied: 2, 'not-interested': 3, sent: 4, error: 5 };
+    const sorted = [...data].sort((a, b) => (order[a.outcome] ?? 9) - (order[b.outcome] ?? 9));
+
+    // Stats
+    const counts = {};
+    data.forEach(r => { counts[r.outcome] = (counts[r.outcome] || 0) + 1; });
+    const total    = data.length;
+    const replied  = data.filter(r => r.replied).length;
+    const hotCount = counts['hot'] || 0;
+    const warmCount= counts['warm'] || 0;
+    document.getElementById('sms-stats').innerHTML = [
+      ['📤 Sent',   total,              '#d4a534'],
+      ['💬 Replied', replied,           '#22c55e'],
+      ['🔥 Hot',     hotCount,          '#f97316'],
+      ['⚡ Warm',    warmCount,          '#eab308'],
+      ['🚫 Not Int.',counts['not-interested']||0,'#f04a4a'],
+      ['⚠ Errors',  counts['error']||0, '#f04a4a'],
+    ].map(([l, n, c]) => `
+      <div class="sms-stat">
+        <div class="sms-stat-n" style="color:${c}">${n}</div>
+        <div class="sms-stat-l">${l}</div>
+      </div>`).join('');
+
+    // Lead list
+    const outcomeEmoji = { hot:'🔥', warm:'⚡', replied:'💬', 'not-interested':'🚫', sent:'📤', error:'⚠' };
+    const outcomeCls   = { hot:'oc-hot', warm:'oc-warm', replied:'oc-completed', 'not-interested':'oc-not-interested', sent:'oc-no-answer', error:'oc-error' };
+
+    document.getElementById('sms-lead-list').innerHTML = sorted.map((r, i) => {
+      const initials = [(r.name || r.phone || '?')[0], (r.name || '').split(' ')[1]?.[0] || ''].join('').toUpperCase() || '?';
+      const displayName = r.name || r.phone || '—';
+      const outcome  = r.outcome || 'sent';
+      const emoji    = outcomeEmoji[outcome] || '📤';
+      const cls      = outcomeCls[outcome]   || 'oc-no-answer';
+      const preview  = r.lastReply ? `"${x(r.lastReply)}"` : (outcome === 'error' ? x(r.error || 'Failed') : 'No reply yet');
+      const timeAgo  = r.repliedAt ? timeSince(r.repliedAt) : (r.sentAt ? 'Sent ' + timeSince(r.sentAt) : '');
+
+      const thread = (r.thread || []).map(m => `
+        <div class="sms-msg ${m.direction}">
+          <span class="sms-msg-dir">${m.direction === 'out' ? 'You' : 'Lead'}</span>
+          <span class="sms-msg-body">${x(m.body)}</span>
+          <span class="sms-msg-time">${new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
+        </div>`).join('');
+
+      return `
+        <div class="sms-lead" id="sms-lead-${i}">
+          <div class="sms-lead-top" onclick="toggleThread(${i})">
+            <div class="sms-lead-av">${x(initials)}</div>
+            <div class="sms-lead-info">
+              <div class="sms-lead-name">${x(displayName)}</div>
+              <div class="sms-lead-phone">${x(r.phone || '')}</div>
+              <div class="sms-lead-preview">${preview}</div>
+            </div>
+            <div class="sms-lead-meta">
+              <span class="outcome-badge ${cls}">${emoji} ${outcome}</span>
+              <span class="sms-time">${x(timeAgo)}</span>
+            </div>
+          </div>
+          ${thread ? `
+          <div class="sms-thread" id="thread-${i}">
+            <div class="sms-thread-inner">${thread}</div>
+            <div class="sms-thread-actions">
+              <a href="tel:${x(r.phone || '')}" class="btn-sms-action btn-call-back">📞 Call Back</a>
+              <a href="sms:${x(r.phone || '')}" class="btn-sms-action btn-call-back" style="text-decoration:none;">💬 Text Back</a>
+            </div>
+          </div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function toggleThread(i) {
+    const el = document.getElementById('thread-' + i);
+    if (el) el.classList.toggle('open');
+  }
+
+  function filterSMS(filter, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (filter === 'all') { renderSMSDashboard(smsAllData); return; }
+    const filtered = smsAllData.filter(r =>
+      filter === 'sent' ? (r.outcome === 'sent' && !r.replied) : r.outcome === filter
+    );
+    renderSMSDashboard(filtered);
+  }
+
+  function timeSince(iso) {
+    const secs = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (secs < 60)   return `${secs}s ago`;
+    if (secs < 3600) return `${Math.floor(secs/60)}m ago`;
+    if (secs < 86400)return `${Math.floor(secs/3600)}h ago`;
+    return `${Math.floor(secs/86400)}d ago`;
+  }
+
+  function downloadSMSCSV() {
+    if (!smsAllData.length) return;
+    const rows = smsAllData.map(r => [
+      r.name || '', r.phone || '', r.outcome || '', r.lastReply || '', r.repliedAt || '', r.sentAt || ''
+    ]);
+    const csv = ['Name,Phone,Outcome,Last Reply,Replied At,Sent At',
+      ...rows.map(r => r.map(v => `"${String(v).replace(/"/g,"'")}"`).join(','))
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `sms-results-${currentJobId?.slice(0,8) || 'export'}.csv`;
+    a.click();
+  }
+
+  // Auto-refresh SMS dashboard every 30s
+  function startSMSAutoRefresh() {
+    if (smsRefreshTimer) clearInterval(smsRefreshTimer);
+    let countdown = 30;
+    const timer = document.getElementById('sms-refresh-timer');
+    smsRefreshTimer = setInterval(() => {
+      countdown--;
+      if (timer) timer.textContent = `Auto-refresh in ${countdown}s`;
+      if (countdown <= 0) { countdown = 30; loadSMSDashboard(); }
+    }, 1000);
   }
 
   // ── CSV: Drag & Drop ──
@@ -763,18 +1073,19 @@
       }
     }
 
-    const limitVal = parseInt(document.getElementById('lim').value);
-    const limit    = limitVal > 0 ? limitVal : rows.length;
-    const useProbe = document.getElementById('use-probe').checked;
+    const limitVal      = parseInt(document.getElementById('lim').value);
+    const limit         = limitVal > 0 ? limitVal : rows.length;
+    const useProbe      = document.getElementById('use-probe').checked;
+    const messageTemplate = document.getElementById('sms-tmpl')?.value || null;
 
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spin"></span>Launching...';
+    btn.disabled  = true;
+    btn.innerHTML = `<span class="spin"></span>${currentMode === 'sms' ? 'Sending...' : 'Launching...'}`;
     errEl.classList.remove('show');
 
     try {
       const res  = await fetch('/api/launch', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows: rows.slice(0, limit), mapping, limit, useProbe })
+        body: JSON.stringify({ rows: rows.slice(0, limit), mapping, limit, useProbe, mode: currentMode, messageTemplate })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Launch failed.');
@@ -787,7 +1098,7 @@
     } catch (err) {
       showErr(errEl, err.message);
       btn.disabled = false;
-      btn.innerHTML = '🚀&nbsp; Launch Sarah';
+      btn.innerHTML = currentMode === 'sms' ? '💬&nbsp; Launch Text Blast' : '🚀&nbsp; Launch Sarah';
     }
   }
 
@@ -797,8 +1108,15 @@
     set('s-ok', 0); set('s-err', 0); set('s-pen', total);
     document.getElementById('pf').style.width = '0%';
     document.getElementById('call-list').innerHTML = '';
-    const banner = document.getElementById('probe-banner');
-    banner.classList.toggle('show', !!useProbe);
+    document.getElementById('probe-banner').classList.toggle('show', !!useProbe && currentMode === 'call');
+    // Update labels for SMS vs Call
+    const h2 = document.querySelector('#screen-live .live-top h2');
+    if (h2) h2.textContent = currentMode === 'sms' ? 'Sarah is texting...' : 'Sarah is calling...';
+    const okBox = document.querySelector('#s-ok + .slb2') || document.querySelector('.sbox:nth-child(2) .slb2');
+    if (okBox) okBox.textContent = currentMode === 'sms' ? 'Sent' : 'Initiated';
+    document.getElementById('live-sub').textContent = currentMode === 'sms'
+      ? 'Sending texts — do not close this tab.'
+      : 'Initiating calls — do not close this tab.';
   }
 
   function connectSSE(jobId) {
@@ -818,13 +1136,14 @@
       if (msg.type === 'update') {
         renderRow(msg.index, msg.result);
         const p = msg.progress;
-        if (msg.result.status === 'initiated') nInit++;
-        if (msg.result.status === 'error')     nErr++;
+        if (msg.result.status === 'initiated' || msg.result.status === 'sent') nInit++;
+        if (msg.result.status === 'error') nErr++;
         const done = p.current;
         set('pc', done); set('s-ok', nInit); set('s-err', nErr);
         set('s-pen', Math.max(0, p.total - done));
         document.getElementById('pf').style.width = (done / p.total * 100).toFixed(1) + '%';
       }
+      if (msg.type === 'reply') { renderRow(msg.index, msg.result); }
       if (msg.type === 'complete') { es.close(); finishLive(msg); }
     };
     es.onerror = () => { es.close(); pollFallback(jobId); };
@@ -834,15 +1153,25 @@
     const total = parseInt(document.getElementById('s-tot').textContent);
     set('pc', total); set('s-pen', 0);
     document.getElementById('pf').style.width = '100%';
-    document.getElementById('live-sub').textContent = '✅ All calls initiated!';
-    setTimeout(() => {
-      set('d-tot', total);
-      set('d-ok',  msg.initiated ?? nInit);
-      set('d-err', msg.errors    ?? nErr);
-      document.getElementById('done-sub').textContent =
-        `Sarah called ${total} leads. Wait 10–15 min for calls to finish, then fetch your results.`;
-      show('done');
-    }, 1800);
+
+    if (currentMode === 'sms') {
+      document.getElementById('live-sub').textContent = '✅ All texts sent!';
+      setTimeout(async () => {
+        show('sms');
+        await loadSMSDashboard();
+        startSMSAutoRefresh();
+      }, 1200);
+    } else {
+      document.getElementById('live-sub').textContent = '✅ All calls initiated!';
+      setTimeout(() => {
+        set('d-tot', total);
+        set('d-ok',  msg.initiated ?? nInit);
+        set('d-err', msg.errors    ?? nErr);
+        document.getElementById('done-sub').textContent =
+          `Sarah called ${total} leads. Wait 10–15 min for calls to finish, then fetch your results.`;
+        show('done');
+      }, 1800);
+    }
   }
 
   function renderRow(index, r) {
@@ -853,7 +1182,9 @@
     const statusMap = {
       pending:   { cls: 'badge-pending',   lbl: 'Pending' },
       calling:   { cls: 'badge-calling',   lbl: 'Calling…' },
-      initiated: { cls: 'badge-initiated', lbl: '✓ Initiated' },
+      sending:   { cls: 'badge-calling',   lbl: 'Sending…' },
+      initiated: { cls: 'badge-initiated', lbl: '✓ Called' },
+      sent:      { cls: 'badge-initiated', lbl: '✓ Sent' },
       error:     { cls: 'badge-error',     lbl: '✗ Error' },
     };
     const s = statusMap[r.status] || statusMap.pending;
@@ -934,15 +1265,17 @@
 
   function restart() {
     rows = []; cols = []; currentJobId = null; nInit = 0; nErr = 0;
-    isPhoneOnly = false; inputMode = 'manual';
+    isPhoneOnly = false; inputMode = 'manual'; smsAllData = [];
+    if (smsRefreshTimer) { clearInterval(smsRefreshTimer); smsRefreshTimer = null; }
     document.getElementById('file-input').value = '';
     document.getElementById('pdf-input').value  = '';
     document.getElementById('manual-ta').value  = '';
     document.getElementById('pdf-status').style.display = 'none';
-    document.getElementById('btn-launch').disabled = false;
+    document.getElementById('btn-launch').disabled  = false;
     document.getElementById('btn-launch').innerHTML = '🚀&nbsp; Launch Sarah';
-    document.getElementById('use-probe').checked = false;
-    setTab('csv');
+    document.getElementById('use-probe').checked    = false;
+    setMode('call');
+    setTab('manual');
     show('upload');
   }
 
