@@ -347,14 +347,24 @@
 
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab-btn active" id="tab-csv-btn" onclick="setTab('csv')">📋&nbsp; CSV</button>
+        <button class="tab-btn active" id="tab-manual-btn" onclick="setTab('manual')">✏️&nbsp; Manual</button>
+        <button class="tab-btn" id="tab-csv-btn" onclick="setTab('csv')">📋&nbsp; CSV</button>
         <button class="tab-btn" id="tab-pdf-btn" onclick="setTab('pdf')">📄&nbsp; PDF</button>
-        <button class="tab-btn" id="tab-manual-btn" onclick="setTab('manual')">✏️&nbsp; Manual</button>
       </div>
       <div class="tab-divider"></div>
 
+      <!-- Manual Panel (default) -->
+      <div id="panel-manual" class="tab-panel active">
+        <div class="manual-wrap">
+          <div class="manual-lbl">Phone Numbers</div>
+          <textarea id="manual-ta" class="manual-ta" placeholder="Enter phone numbers, one per line:&#10;&#10;(805) 268-3615&#10;+1 800 555 0100&#10;5552345678"></textarea>
+          <div class="manual-hint">One number per line. Any format works — dashes, dots, spaces, parentheses.</div>
+          <button class="btn-continue" onclick="parseManual()">Continue with these numbers →</button>
+        </div>
+      </div>
+
       <!-- CSV Panel -->
-      <div id="panel-csv" class="tab-panel active">
+      <div id="panel-csv" class="tab-panel">
         <div class="dropzone" id="dropzone">
           <input type="file" id="file-input" accept=".csv" />
           <span class="drop-icon">📋</span>
@@ -383,16 +393,6 @@
           <div class="drop-badge">PDF only</div>
         </div>
         <div id="pdf-status" class="pdf-status"></div>
-      </div>
-
-      <!-- Manual Panel -->
-      <div id="panel-manual" class="tab-panel">
-        <div class="manual-wrap">
-          <div class="manual-lbl">Phone Numbers</div>
-          <textarea id="manual-ta" class="manual-ta" placeholder="Enter phone numbers, one per line:&#10;&#10;(805) 268-3615&#10;+1 800 555 0100&#10;5552345678"></textarea>
-          <div class="manual-hint">One number per line. Any format works — dashes, dots, spaces, parentheses.</div>
-          <button class="btn-continue" onclick="parseManual()">Continue with these numbers →</button>
-        </div>
       </div>
     </div>
   </div>
@@ -542,7 +542,7 @@
   let rows = [], cols = [];
   let nInit = 0, nErr = 0;
   let currentJobId = null;
-  let inputMode = 'csv';    // 'csv' | 'pdf' | 'manual'
+  let inputMode = 'manual'; // 'csv' | 'pdf' | 'manual'
   let isPhoneOnly = false;
 
   // ── Screens ──
@@ -934,7 +934,7 @@
 
   function restart() {
     rows = []; cols = []; currentJobId = null; nInit = 0; nErr = 0;
-    isPhoneOnly = false; inputMode = 'csv';
+    isPhoneOnly = false; inputMode = 'manual';
     document.getElementById('file-input').value = '';
     document.getElementById('pdf-input').value  = '';
     document.getElementById('manual-ta').value  = '';
